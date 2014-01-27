@@ -35,7 +35,7 @@ type PublicSuffixList
         is_exception = false
         if beginswith(fullname, '!')
             is_exception = true
-            fullname = fullname[2:]
+            fullname = fullname[2:end]
         end
 
         # parse fullname, hook into _dtree
