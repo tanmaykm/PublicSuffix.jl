@@ -1,6 +1,8 @@
 PublicSuffix.jl
 ===============
 
+[![Build Status](https://travis-ci.org/tanmaykm/PublicSuffix.jl.png)](https://travis-ci.org/tanmaykm/PublicSuffix.jl)
+
 Julia Interface for working with the Public Suffix List at http://publicsuffix.org/.
 
 ## Type PublicSuffixList
