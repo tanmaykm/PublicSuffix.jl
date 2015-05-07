@@ -8,21 +8,21 @@ export Domain, tld_exists, public_suffix, PublicSuffixList
 #include("punycode.jl")
 
 type DPart
-    name::String
+    name::AbstractString
     is_leaf::Bool
     is_exception::Bool
-    children::Dict{String,DPart}
+    children::Dict{AbstractString,DPart}
 end
 
 type PublicSuffixList
     _dtree::DPart
 
-    function PublicSuffixList(list_file::String="")
+    function PublicSuffixList(list_file::AbstractString="")
         if isempty(list_file)
             list_file = joinpath(Pkg.dir("PublicSuffix"), "data", "effective_tld_names.dat")
         end
 
-        root = DPart("", false, false, Dict{String,DPart}())
+        root = DPart("", false, false, Dict{AbstractString,DPart}())
         open(list_file, "r") do f
             for line in readlines(f)
                 (isempty(line) || @compat(startswith(line, "//")) || isspace(line[1])) && continue
@@ -52,7 +52,7 @@ type PublicSuffixList
             elseif !is_exception && haskey(node.children, "*")
                 node = node.children["*"]
             else
-                new_node = DPart(part, false, false, Dict{String,DPart}())
+                new_node = DPart(part, false, false, Dict{AbstractString,DPart}())
                 node.children[part] = new_node
                 node = new_node
             end
@@ -65,13 +65,13 @@ end
 
 
 type Domain
-    full::String
-    sub_domain::String
-    public_suffix::String
-    top_domain::String
+    full::AbstractString
+    sub_domain::AbstractString
+    public_suffix::AbstractString
+    top_domain::AbstractString
     typ::Type    # valid types: IPv6, IPv4, Domain
 
-    function Domain(domain::String, list::PublicSuffixList=_def_list)
+    function Domain(domain::AbstractString, list::PublicSuffixList=_def_list)
         try
             ip = parseip(domain)
             # this is an ip
@@ -83,9 +83,9 @@ type Domain
         parts = split(domain, '.')
         nparts = length(parts)
         node = list._dtree
-        pub_nodes = String[]
-        sub_nodes = String[]
-        top_domain = String[]
+        pub_nodes = AbstractString[]
+        sub_nodes = AbstractString[]
+        top_domain = AbstractString[]
         tld_mode = true
         is_exception = false
 
@@ -127,7 +127,7 @@ end
 
 _def_list = PublicSuffixList()
 
-function tld_exists(tld::String; list::PublicSuffixList=_def_list)
+function tld_exists(tld::AbstractString; list::PublicSuffixList=_def_list)
     parts = split(tld, '.')
     nparts = length(parts)
     node = list._dtree
@@ -145,7 +145,7 @@ function tld_exists(tld::String; list::PublicSuffixList=_def_list)
     return node.is_leaf 
 end
 
-public_suffix(domain::String; list::PublicSuffixList=_def_list) = return Domain(domain, list).public_suffix
+public_suffix(domain::AbstractString; list::PublicSuffixList=_def_list) = return Domain(domain, list).public_suffix
 
 end # module
 
