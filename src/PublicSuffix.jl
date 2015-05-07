@@ -1,5 +1,7 @@
 module PublicSuffix
 
+using Compat
+
 export Domain, tld_exists, public_suffix, PublicSuffixList
 # TODO: puny code support
 #export puny_encode, puny_decode
@@ -23,7 +25,7 @@ type PublicSuffixList
         root = DPart("", false, false, Dict{String,DPart}())
         open(list_file, "r") do f
             for line in readlines(f)
-                (isempty(line) || beginswith(line, "//") || isspace(line[1])) && continue
+                (isempty(line) || @compat(startswith(line, "//")) || isspace(line[1])) && continue
                 line = split(line)[1]
                 add_node(line, root)
             end
@@ -33,7 +35,7 @@ type PublicSuffixList
 
     function add_node(fullname, root::DPart)
         is_exception = false
-        if beginswith(fullname, '!')
+        if @compat(startswith(fullname, '!'))
             is_exception = true
             fullname = fullname[2:end]
         end
@@ -76,7 +78,7 @@ type Domain
             return new(domain, "", "", "", typeof(ip))
         end
         domain = lowercase(domain)
-        (beginswith(domain, '.') || endswith(domain, '.')) && error("invalid domain name $domain")
+        (@compat(startswith(domain, '.')) || endswith(domain, '.')) && error("invalid domain name $domain")
 
         parts = split(domain, '.')
         nparts = length(parts)
