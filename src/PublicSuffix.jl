@@ -19,7 +19,7 @@ type PublicSuffixList
 
     function PublicSuffixList(list_file::AbstractString="")
         if isempty(list_file)
-            list_file = joinpath(Pkg.dir("PublicSuffix"), "data", "effective_tld_names.dat")
+            list_file = joinpath(dirname(@__FILE__), "..", "data", "effective_tld_names.dat")
         end
 
         root = DPart("", false, false, Dict{AbstractString,DPart}())
